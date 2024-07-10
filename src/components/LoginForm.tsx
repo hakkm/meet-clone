@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,11 +11,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
-import { useActionState } from "react";
-import { login } from "@/app/login/actions";
+import { signIn } from "next-auth/react";
+import { Icons } from "./ui/icons";
+import { LoadingButton } from "./ui/LoadingButton";
+import { useState } from "react";
 
 export function LoginForm() {
-  const [state, action] = useActionState(login, null);
+  const [discordLoading, setDiscordLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [githubLoading, setGithubLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [googleLoading, setGoogleLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [loginLoading, setLoginLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -26,8 +38,8 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={action}>
-          <div className="grid gap-4">
+        <div className="grid gap-4">
+          <form>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -37,11 +49,11 @@ export function LoginForm() {
                 placeholder="m@example.com"
                 required
               />
-              {state?.errors.email && (
-                <div className="text-red-500 text-sm">
-                  {state.errors.email}
-                </div>
-              )}
+              {/* {state?.errors.email && ( */}
+              {/*   <div className="text-red-500 text-sm"> */}
+              {/*     {state.errors.email} */}
+              {/*   </div> */}
+              {/* )} */}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
@@ -54,29 +66,60 @@ export function LoginForm() {
                 </Link>
               </div>
               <Input id="password" type="password" name="password" required />
-              {state?.errors.password && (
-                <div className="text-red-500 text-sm">
-                  {state.errors.password}
-                </div>
-              )}
-            </div>
-            <Button type="submit" className="w-full">
+              {/* {state?.errors.password && ( */}
+              {/*   <div className="text-red-500 text-sm"> */}
+              {/*     {state.errors.password} */}
+              {/*   </div> */}
+              {/* )} */}
+            <LoadingButton
+              type="submit"
+              loading={loginLoading === "loading"}
+              className="w-full"
+            >
               Login
-            </Button>
-            <Button variant="outline" className="w-full">
-              <DiscordLogoIcon className="mr-2" /> Login with Discord
-            </Button>
-            <Button variant="outline" className="w-full">
-              <GitHubLogoIcon className="mr-2" /> Login with Github
-            </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline">
-              Sign up
-            </Link>
-          </div>
-        </form>
+            </LoadingButton>{" "}
+            </div>
+          </form>
+          <LoadingButton
+            loading={googleLoading === "loading"}
+            onClick={() => {
+              setGoogleLoading("loading");
+              signIn("google", {redirect: true, callbackUrl: "/profile"});
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <Icons.google className="mr-2 w-4 h-4" /> Login with Google
+          </LoadingButton>
+          <LoadingButton
+            loading={discordLoading === "loading"}
+            onClick={() => {
+              setDiscordLoading("loading");
+              signIn("discord", {redirect: true, callbackUrl: "/profile"});
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <DiscordLogoIcon className="mr-2" /> Login with Discord
+          </LoadingButton>
+          <LoadingButton
+            loading={githubLoading === "loading"}
+            onClick={() => {
+              setGithubLoading("loading");
+              signIn("github", {redirect: true, callbackUrl: "/profile"});
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <GitHubLogoIcon className="mr-2" /> Login with GitHub
+          </LoadingButton>{" "}
+        </div>
+        <div className="mt-4 text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="underline">
+            Sign up
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

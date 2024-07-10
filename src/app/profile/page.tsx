@@ -1,5 +1,5 @@
 import { getServerSession, type Session } from "next-auth";
-import { authOptions } from "./_lib/nextAuth";
+import { authOptions } from "@/app/_lib/nextAuth";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ export default async function Home() {
   const session: Session = (await getServerSession(authOptions)) as Session;
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <h1 className="text-3xl font-bold">Secret Page</h1>
       {session ? (
         <div className="flex flex-col items-center">
           <h1 className="text-3xl font-bold my-4">{session.user?.name}</h1>

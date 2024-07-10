@@ -1,39 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { decrypt } from './app/_lib/sessions'
- 
-// 1. Specify protected and public routes
-const protectedRoutes = ['/']
-const publicRoutes = ['/login', '/signup']
- 
-export default async function middleware(req: NextRequest) {
-  // 2. Check if the current route is protected or public
-  const path = req.nextUrl.pathname
-  const isProtectedRoute = protectedRoutes.includes(path)
-  const isPublicRoute = publicRoutes.includes(path)
- 
-  // 3. Decrypt the session from the cookie
-  const cookie = cookies().get('session')?.value
-  const session = await decrypt(cookie)
- 
-  // 5. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
-  }
- 
-  // 6. Redirect to / if the user is authenticated and tries to access a public route
-  if (
-    isPublicRoute &&
-    session?.userId
-    // !req.nextUrl.pathname.startsWith('/')
-  ) {
-    return NextResponse.redirect(new URL('/', req.nextUrl))
-  }
- 
-  return NextResponse.next()
-}
- 
+import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "next-auth/middleware";
+import { getToken } from "next-auth/jwt";
+import { getSession } from "next-auth/react";
+
+const protectedRoutes = ["/profile"];
+const publicRoutes = ["/login", "/signup", "/"];
+
+export default withAuth(
+  async function middleware(req: NextRequest) {
+    const path = req.nextUrl.pathname;
+    const isProtectedRoute = protectedRoutes.includes(path);
+    const isAuthRoute = path.startsWith("/auth");
+
+    const isAuth = await getToken({
+      req,
+      secret: process.env.JWT_SECRET,
+    });
+
+    if (isProtectedRoute && !isAuth) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+
+    console.log(isAuth);
+    if (isAuth && isAuthRoute) {
+      return NextResponse.redirect(new URL("/profile", req.url));
+    }
+  },
+
+  {
+    callbacks: {
+      async authorized() {
+        return true;
+      },
+    },
+  },
+);
+
 // Routes Middleware should not run on
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
-}
+  matcher: ["/profile/:path*", "/auth/:path*"],
+};
