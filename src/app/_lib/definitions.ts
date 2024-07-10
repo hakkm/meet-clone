@@ -28,3 +28,5 @@ export type User = {
   email: string;
   password: string;
 };
+
+export type Provider = "email" | "google" | "discord" | "github";

@@ -14,21 +14,25 @@ import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { signIn } from "next-auth/react";
 import { Icons } from "./ui/icons";
 import { LoadingButton } from "./ui/LoadingButton";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useFormStatus } from "react-dom";
+import { SocialLogin } from "@/app/_lib/actions";
 
 export function LoginForm() {
-  const [discordLoading, setDiscordLoading] = useState<"loading" | "neutral">(
-    "neutral",
-  );
-  const [githubLoading, setGithubLoading] = useState<"loading" | "neutral">(
-    "neutral",
-  );
-  const [googleLoading, setGoogleLoading] = useState<"loading" | "neutral">(
-    "neutral",
-  );
-  const [loginLoading, setLoginLoading] = useState<"loading" | "neutral">(
-    "neutral",
-  );
+  // type for email google...
+  type Provider = "email" | "google" | "discord" | "github";
+  const [socialLoading, setSocialLoading] = useState<
+    "idle" | "email" | "google" | "discord" | "github"
+  >("idle");
+  const [isPending, startTransition] = useTransition();
+
+  function handleSocialLogin(formData: FormData) {
+    const provider = formData.get("provider") as Provider;
+    setSocialLoading(provider);
+    console.log("socialLoading", socialLoading);
+    SocialLogin(formData);
+  }
+
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -69,15 +73,15 @@ export function LoginForm() {
               {/* {state?.errors.password && ( */}
               {/*   <div className="text-red-500 text-sm"> */}
               {/*     {state.errors.password} */}
-                {/* </div> */}
+              {/* </div> */}
               {/* )} */}
-            <LoadingButton
-              type="submit"
-              loading={loginLoading === "loading"}
-              className="w-full mt-2"
-            >
-            Log In with Email
-            </LoadingButton>{" "}
+              <LoadingButton
+                type="submit"
+                loading={socialLoading === "email"}
+                className="w-full mt-2"
+              >
+                Log In with Email
+              </LoadingButton>{" "}
             </div>
           </form>
           <div className="flex items-center">
@@ -87,39 +91,48 @@ export function LoginForm() {
             </span>
             <div className="flex-grow h-px bg-gray-300" />
           </div>
-          <LoadingButton
-            loading={googleLoading === "loading"}
-            onClick={() => {
-              setGoogleLoading("loading");
-              signIn("google", {redirect: true, callbackUrl: "/profile"});
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            <Icons.google className="mr-2 w-4 h-4" /> Login with Google
-          </LoadingButton>
-          <LoadingButton
-            loading={discordLoading === "loading"}
-            onClick={() => {
-              setDiscordLoading("loading");
-              signIn("discord", {redirect: true, callbackUrl: "/profile"});
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            <DiscordLogoIcon className="mr-2" /> Login with Discord
-          </LoadingButton>
-          <LoadingButton
-            loading={githubLoading === "loading"}
-            onClick={() => {
-              setGithubLoading("loading");
-              signIn("github", {redirect: true, callbackUrl: "/profile"});
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            <GitHubLogoIcon className="mr-2" /> Login with GitHub
-          </LoadingButton>{" "}
+          <div className="grid gap-2">
+            <LoadingButton
+              loading={socialLoading === "google"}
+              type="submit"
+              name="provider"
+              value="google"
+              onClick={() => {
+                  setSocialLoading("google");
+                  SocialLogin("google")
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <Icons.google className="mr-2 w-4 h-4" /> Login with Google
+            </LoadingButton>
+            <LoadingButton
+              loading={socialLoading === "discord"}
+              name="provider"
+              value="discord"
+              onClick={() => {
+                  setSocialLoading("discord");
+                  SocialLogin("discord")
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <DiscordLogoIcon className="mr-2" /> Login with Discord
+            </LoadingButton>
+            <LoadingButton
+              loading={socialLoading === "github"}
+              name="provider"
+              value="github"
+              onClick={() => {
+                  setSocialLoading("github");
+                  SocialLogin("github")
+              }}
+              variant="outline"
+              className="w-full"
+            >
+              <GitHubLogoIcon className="mr-2" /> Login with GitHub
+            </LoadingButton>
+          </div>
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
