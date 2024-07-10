@@ -12,11 +12,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { Icons } from "./ui/icons";
+import { useState } from "react";
 import { useActionState } from "react";
-import { signup } from "@/app/signup/actions";
+import { LoadingButton } from "./ui/LoadingButton";
+import { signIn } from "next-auth/react";
 
 export function SignUpForm() {
-  const [state, SignUpAction] = useActionState(signup, null);
+  const [discordLoading, setDiscordLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [githubLoading, setGithubLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [googleLoading, setGoogleLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
+  const [loginLoading, setLoginLoading] = useState<"loading" | "neutral">(
+    "neutral",
+  );
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -26,14 +39,14 @@ export function SignUpForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={SignUpAction} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" placeholder="Name" required />
-            {state?.errors.name && (
-              <div className="text-red-500 text-sm">{state.errors.name}</div>
-            )}
-          </div>
+        <form className="grid gap-4">
+          {/* <div className="grid gap-2"> */}
+            {/* <Label htmlFor="name">Name</Label> */}
+            {/* <Input id="name" name="name" placeholder="Name" required /> */}
+            {/* {state?.errors.name && ( */}
+            {/*   <div className="text-red-500 text-sm">{state.errors.name}</div> */}
+            {/* )} */}
+          {/* </div> */}
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -43,37 +56,68 @@ export function SignUpForm() {
               placeholder="m@example.com"
               required
             />
-            {state?.errors.email && (
-              <div className="text-red-500 text-sm">{state.errors.email}</div>
-            )}
+            {/* {state?.errors.email && ( */}
+            {/*   <div className="text-red-500 text-sm">{state.errors.email}</div> */}
+            {/* )} */}
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" name="password" />
+          {/* <div className="grid gap-2"> */}
+            {/* <Label htmlFor="password">Password</Label> */}
+            {/* <Input id="password" type="password" name="password" /> */}
 
-            {state?.errors?.password && (
-              <div className="text-sm text-red-500">
-                <p>Password must:</p>
-                <ul>
-                  {state.errors.password.map((error) => (
-                    <li key={error}>- {error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+            {/* {state?.errors?.password && ( */}
+            {/*   <div className="text-sm text-red-500"> */}
+            {/*     <p>Password must:</p> */}
+            {/*     <ul> */}
+            {/*       {state.errors.password.map((error) => ( */}
+            {/*         <li key={error}>- {error}</li> */}
+            {/*       ))} */}
+            {/*     </ul> */}
+            {/*   </div> */}
+            {/* )} */}
+          {/* </div> */}
           <Button type="submit" className="w-full">
-            Create an account
+            Sign In with Email
           </Button>
-          <Button variant="outline" className="w-full">
-            <Icons.google className="mr-2 w-4 h-4" /> Sign up with Google
-          </Button>
-          <Button variant="outline" className="w-full">
-            <DiscordLogoIcon className="mr-2" /> Login with Discord
-          </Button>
-          <Button variant="outline" className="w-full">
-            <GitHubLogoIcon className="mr-2" /> Login with Github
-          </Button>
+          <div className="flex items-center">
+            <div className="flex-grow h-px bg-gray-300" />
+            <span className="px-4 text-xs text-muted-foreground">
+              OR CONTINUE WITH
+            </span>
+            <div className="flex-grow h-px bg-gray-300" />
+          </div>
+          <LoadingButton
+            loading={googleLoading === "loading"}
+            onClick={() => {
+              setGoogleLoading("loading");
+              signIn("google", { redirect: true, callbackUrl: "/profile" });
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <Icons.google className="mr-2 w-4 h-4" /> Google
+          </LoadingButton>
+          <LoadingButton
+            loading={discordLoading === "loading"}
+            onClick={() => {
+              setDiscordLoading("loading");
+              signIn("discord", { redirect: true, callbackUrl: "/profile" });
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <DiscordLogoIcon className="mr-2" /> Discord
+          </LoadingButton>
+          <LoadingButton
+            loading={githubLoading === "loading"}
+            onClick={() => {
+              setGithubLoading("loading");
+              signIn("github", { redirect: true, callbackUrl: "/profile" });
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            <GitHubLogoIcon className="mr-2" /> GitHub
+          </LoadingButton>{" "}
         </form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}

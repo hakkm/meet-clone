@@ -56,30 +56,37 @@ export function LoginForm() {
               {/* )} */}
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" name="password" required />
+              {/* <div className="flex items-center"> */}
+              {/*   <Label htmlFor="password">Password</Label> */}
+              {/*   <Link */}
+              {/*     href="#" */}
+              {/*     className="ml-auto inline-block text-sm underline" */}
+              {/*   > */}
+              {/*     Forgot your password? */}
+              {/*   </Link> */}
+              {/* </div> */}
+              {/* <Input id="password" type="password" name="password" required /> */}
               {/* {state?.errors.password && ( */}
               {/*   <div className="text-red-500 text-sm"> */}
               {/*     {state.errors.password} */}
-              {/*   </div> */}
+                {/* </div> */}
               {/* )} */}
             <LoadingButton
               type="submit"
               loading={loginLoading === "loading"}
-              className="w-full"
+              className="w-full mt-2"
             >
-              Login
+            Log In with Email
             </LoadingButton>{" "}
             </div>
           </form>
+          <div className="flex items-center">
+            <div className="flex-grow h-px bg-gray-300" />
+            <span className="px-4 text-xs text-muted-foreground">
+              OR CONTINUE WITH
+            </span>
+            <div className="flex-grow h-px bg-gray-300" />
+          </div>
           <LoadingButton
             loading={googleLoading === "loading"}
             onClick={() => {
@@ -116,7 +123,7 @@ export function LoginForm() {
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline">
+          <Link href="/auth/signup" className="underline">
             Sign up
           </Link>
         </div>

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAuth } from "next-auth/middleware";
 import { getToken } from "next-auth/jwt";
-import { getSession } from "next-auth/react";
 
 const protectedRoutes = ["/profile"];
-const publicRoutes = ["/login", "/signup", "/"];
 
 export default withAuth(
   async function middleware(req: NextRequest) {
