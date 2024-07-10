@@ -11,27 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DiscordLogoIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
-import { signIn } from "next-auth/react";
 import { Icons } from "./ui/icons";
 import { LoadingButton } from "./ui/LoadingButton";
-import { useState, useTransition } from "react";
-import { useFormStatus } from "react-dom";
+import { useState } from "react";
 import { SocialLogin } from "@/app/_lib/actions";
 
 export function LoginForm() {
   // type for email google...
   type Provider = "email" | "google" | "discord" | "github";
   const [socialLoading, setSocialLoading] = useState<
-    "idle" | "email" | "google" | "discord" | "github"
-  >("idle");
-  const [isPending, startTransition] = useTransition();
-
-  function handleSocialLogin(formData: FormData) {
-    const provider = formData.get("provider") as Provider;
-    setSocialLoading(provider);
-    console.log("socialLoading", socialLoading);
-    SocialLogin(formData);
-  }
+    null | Provider
+  >(null);
 
   return (
     <Card className="mx-auto max-w-sm">
