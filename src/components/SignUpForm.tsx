@@ -17,7 +17,7 @@ import { useActionState } from "react";
 import { LoadingButton } from "./ui/LoadingButton";
 import { signIn } from "next-auth/react";
 
-export function SignUpForm() {
+export function RegisterForm() {
   const [discordLoading, setDiscordLoading] = useState<"loading" | "neutral">(
     "neutral",
   );
