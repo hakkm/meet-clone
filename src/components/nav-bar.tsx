@@ -5,9 +5,9 @@
  */
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/auth";
-import { signOut } from "next-auth/react"
+import { auth, signOut } from "@/auth";
 import SignOutButton from "./SignOutButton";
+import { AUTH_ROUTES } from "@/routes";
 
 export async function NavBar() {
   const session = await auth();
@@ -52,14 +52,14 @@ export async function NavBar() {
           {!session?.user ? (
             <div className="flex items-center gap-4">
               <Link
-                href="/auth/login"
+                href={AUTH_ROUTES.LOGIN}
                 className="flex items-center gap-2"
                 prefetch={false}
               >
                 <Button variant="outline" size="sm">Sign in</Button>
               </Link>
               <Link
-                href="/auth/signup"
+                href={AUTH_ROUTES.REGISTER}
                 className="flex items-center gap-2"
                 prefetch={false}
               >
@@ -67,7 +67,12 @@ export async function NavBar() {
               </Link>
             </div>
           ) : (
-            <SignOutButton />
+            <form action={async () => {
+              "use server"
+              await signOut()
+            }}>
+              <Button variant="outline" size="sm">Sign out</Button>
+            </form>
           )}
         </div>
       </div>

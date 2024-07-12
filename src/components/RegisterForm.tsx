@@ -35,7 +35,10 @@ export default function RegisterForm() {
 
   function onSubmit(values: RegisterInputs) {
     startTransition(() => {
-      register(values);
+      register(values).then((res) => {
+        setError(res?.error || "");
+        setSuccess(res?.success || "");
+      });
     });
   }
 
@@ -59,6 +62,7 @@ export default function RegisterForm() {
                 <FormControl>
                   <Input
                     type="text"
+                    // name="name"
                     placeholder="John Doe"
                     disabled={isPending}
                     {...field}
@@ -77,6 +81,7 @@ export default function RegisterForm() {
                 <FormControl>
                   <Input
                     type="email"
+                    // name="email"
                     placeholder="doe@example.com"
                     disabled={isPending}
                     {...field}
@@ -95,6 +100,7 @@ export default function RegisterForm() {
                 <FormControl>
                   <Input
                     type="password"
+                    // name="password"
                     placeholder="password"
                     disabled={isPending}
                     {...field}

@@ -34,7 +34,10 @@ export default function LoginForm() {
 
   function onSubmit(values: LoginInputs) {
     startTransition(() => {
-      login(values)
+      login(values).then((res) => {
+        setError(res?.error || "");
+        setSuccess(res?.success || "");
+      });
     });
   }
 
