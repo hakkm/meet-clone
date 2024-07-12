@@ -40,7 +40,6 @@ export async function login(values: LoginInputs): Promise<Output> {
     });
   } catch (error) {
     if (error instanceof AuthError) {
-      console.log("Error Type: ", error.type);
       switch (error.type) {
         case "CredentialsSignin":
           return { error: "Invalid credentials!" };
@@ -65,7 +64,6 @@ export async function register(values: RegisterInputs): Promise<Output> {
   const pwHash = await saltAndHashPassword(password);
 
   const existingUser = await getUserByEmail(email);
-  console.log("Existing User: ", existingUser);
 
   if (existingUser) {
     return { error: "User already exists." };

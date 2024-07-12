@@ -20,6 +20,8 @@ export async function getUserByEmail(email: string): Promise<any> {
   const NO_USERS = 0
   try {
     const user = await db.select({
+      id: users.id,
+      name: users.name,
       email: users.email,
       password: users.password,
     }).from(users).where(sql`${users.email} = ${email}`)

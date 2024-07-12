@@ -1,18 +1,40 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import Github from "next-auth/providers/github";
-import Discord from "next-auth/providers/discord";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { accounts, sessions, users, verificationTokens } from "@/db/schema";
 import { db } from "@/db";
-import Credentials from "next-auth/providers/credentials";
-import { ZodError } from "zod";
-import { RegisterSchema } from "./app/_lib/definitions";
-import { saltAndHashPassword } from "./lib/utils";
-import { getUserFromDb } from "./db/data/user";
-import authConfig from "@/auth.config"
+import authConfig from "@/auth.config";
+import { sql } from "drizzle-orm";
 
-export const { handlers: {GET, POST}, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  events: {
+    // get called when a user is created with oauth
+    async linkAccount({ user }) {
+      console.log({ user_link_acount: user });
+      await db
+        .update(users)
+        .set({ emailVerified: new Date() })
+        .where(sql`${users.id} = ${user.id}`)
+        .execute();
+      console.log("Account linked successfully");
+    },
+  },
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user && token.sub) session.user.id = token.sub;
+      console.log({ sessionFromSession: session });
+      console.log({ tokenFromSession: token });
+      return session;
+    },
+    async jwt({ token, user }) {
+      console.log({ tokenFromJwt: token });
+      console.log({ userToken: user });
+      return token;
+    },
+  },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
