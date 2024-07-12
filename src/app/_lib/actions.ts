@@ -14,6 +14,7 @@ import { signIn } from "@/auth";
 import { DEFAULT_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
+import { OAuthSignInError } from "@/auth.config";
 
 // output type for both login and register
 type Output = {
@@ -43,6 +44,8 @@ export async function login(values: LoginInputs): Promise<Output> {
       switch (error.type) {
         case "CredentialsSignin":
           return { error: "Invalid credentials!" };
+        case "OAuthSignInError":
+          return { error: "Already signed in with OAuth!"}
         default:
           return { error: "Something went wrong!" };
       }

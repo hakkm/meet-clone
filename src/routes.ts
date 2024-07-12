@@ -15,6 +15,7 @@ export const PUBLIC_ROUTES: string[] = ["/"];
 export const AUTH_ROUTES = {
   LOGIN: "/auth/login",
   REGISTER: "/auth/register",
+  ERROR: "/auth/error",
 };
 /**
  * The prefix for API auth routes

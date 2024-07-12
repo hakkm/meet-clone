@@ -27,16 +27,5 @@ export const authOptions: AuthOptions = {
   jwt: {
     secret: process.env.JWT_SECRET as string,
   },
-  callbacks: {
-    // signIn, session callback
-    /// add something to session
-  },
   secret: process.env.NEXTAUTH_SECRET as string,
-  pages: {
-    signIn: '/login',
-    signOut: '/logout',
-    error: '/error',
-    verifyRequest: '/verify',
-    newUser: '/signup'
-  }
 };
