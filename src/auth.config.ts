@@ -6,7 +6,6 @@ import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./app/_lib/definitions";
 import { getUserByEmail } from "./db/data/user";
 import bcrypt from "bcryptjs";
-import { unknown } from "zod";
 
 export default {
   providers: [

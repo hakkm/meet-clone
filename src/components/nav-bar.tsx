@@ -69,7 +69,7 @@ export async function NavBar() {
           ) : (
             <form action={async () => {
               "use server"
-              await signOut()
+              await signOut({redirectTo: AUTH_ROUTES.LOGIN});
             }}>
               <Button variant="outline" size="sm">Sign out</Button>
             </form>
