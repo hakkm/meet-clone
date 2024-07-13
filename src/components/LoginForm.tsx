@@ -19,6 +19,7 @@ import FormError from "@/components/form-error";
 import FormSuccess from "@/components/form-success";
 import { useState, useTransition } from "react";
 import { login } from "@/app/_lib/actions";
+import { Socials } from "@/components/auth/socials";
 
 export default function LoginForm() {
   const [isPending, startTransition] = useTransition();
@@ -48,7 +49,6 @@ export default function LoginForm() {
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"
       backButtonDescription="Register"
-      showSocial={true}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 mb-2">
@@ -95,6 +95,7 @@ export default function LoginForm() {
           </Button>
         </form>
       </Form>
+      <Socials />
     </CardWrapper>
   );
 }
