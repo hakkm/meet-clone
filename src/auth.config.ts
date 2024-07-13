@@ -7,6 +7,9 @@ import { LoginSchema } from "./app/_lib/definitions";
 import { getUserByEmail } from "./db/data/user";
 import bcrypt from "bcryptjs";
 import Resend from "next-auth/providers/resend"
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { accounts, sessions, users, verificationTokens } from "./db/schema";
+import { db } from "./db";
 
 
 export class OAuthSignInError extends AuthError {
@@ -17,10 +20,16 @@ export class OAuthSignInError extends AuthError {
 }
 
 export default {
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }),
   providers: [
-    // Resend({
-    //   from: "onboarding@resend.dev",
-    // }),
+    Resend({
+      from: "onboarding@resend.dev",
+    }),
     Google({
 
       allowDangerousEmailAccountLinking: true,
