@@ -1,4 +1,4 @@
-import { users } from "@/db/schema";
+import { users, verificationTokens } from "@/db/schema";
 import { z } from "zod";
 
 export const RegisterSchema = z.object({
@@ -26,6 +26,7 @@ export const LoginFormSchema = z.object({
 });
 
 export type User = typeof users.$inferSelect; // return type when queried
+export type VerificationToken = typeof verificationTokens.$inferSelect;
 
 export type Provider = "email" | "google" | "discord" | "github";
 
