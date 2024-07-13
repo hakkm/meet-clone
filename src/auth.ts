@@ -50,12 +50,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
   session: { strategy: "jwt" },
   ...authConfig,
 });

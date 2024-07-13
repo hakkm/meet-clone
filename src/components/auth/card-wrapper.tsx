@@ -2,8 +2,7 @@
 
 import { Url } from "next/dist/shared/lib/router/router";
 import { ReactNode } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
-import { Socials } from "./socials";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { BackLink } from "./back-link";
 
 interface CardWrapperProps {
@@ -13,7 +12,6 @@ interface CardWrapperProps {
   backButtonLabel: string;
   backButtonDescription: string;
   backButtonHref: Url;
-  showSocial: boolean;
 }
 
 export function CardWrapper({
@@ -23,7 +21,6 @@ export function CardWrapper({
   backButtonLabel,
   backButtonHref,
   backButtonDescription,
-  showSocial,
 }: CardWrapperProps) {
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -34,7 +31,6 @@ export function CardWrapper({
         </CardHeader>
         <CardContent>
           {children}
-          <Socials />
           <BackLink 
             backButtonLabel={backButtonLabel}
             backButtonHref={backButtonHref}

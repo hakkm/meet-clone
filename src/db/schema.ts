@@ -68,7 +68,7 @@ export const verificationTokens = pgTable(
     identifier: text("identifier")
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    email: text("email").notNull(),
+    email: text("email"),
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
