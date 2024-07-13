@@ -8,12 +8,10 @@ import { getUserByEmail } from "./db/data/user";
 import bcrypt from "bcryptjs";
 
 
-// create a custom error of when user login with credentials and he already logged in with oauth
-// extends from AuthError with defined type as OAuthSignInError
 export class OAuthSignInError extends AuthError {
   static type = "OAuthSignInError";
   constructor() {
-    super("OAuthSignInError");
+    super("User is signed in using OAuth");
   }
 }
 
@@ -45,11 +43,11 @@ export default {
           
           const user = data? data[0] : null;
 
-          const isLoggedInUsingOAuth = !user?.password;
           if (!user) {
             return null;
           }
 
+          const isLoggedInUsingOAuth = !user.password;
           if (isLoggedInUsingOAuth) {
             throw new OAuthSignInError();
           }
