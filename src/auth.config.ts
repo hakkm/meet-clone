@@ -6,6 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./app/_lib/definitions";
 import { getUserByEmail } from "./db/data/user";
 import bcrypt from "bcryptjs";
+import Resend from "next-auth/providers/resend"
 
 
 export class OAuthSignInError extends AuthError {
@@ -17,6 +18,9 @@ export class OAuthSignInError extends AuthError {
 
 export default {
   providers: [
+    // Resend({
+    //   from: "onboarding@resend.dev",
+    // }),
     Google({
 
       allowDangerousEmailAccountLinking: true,
@@ -38,10 +42,7 @@ export default {
           console.log("validatedFields");
           const { email, password } = validatedFields.data;
 
-          const data = await getUserByEmail(email);
-          console.log({data: data});
-          
-          const user = data? data[0] : null;
+          const user = await getUserByEmail(email);
 
           if (!user) {
             return null;
@@ -52,11 +53,7 @@ export default {
             throw new OAuthSignInError();
           }
 
-          if (!user) {
-            return null;
-          }
-
-          const isValidPassword = await bcrypt.compare(password, user.password);
+          const isValidPassword = await bcrypt.compare(password, user.password!);
           if (!isValidPassword) {
             return null;
           }

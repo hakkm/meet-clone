@@ -4,6 +4,7 @@ import { accounts, sessions, users, verificationTokens } from "@/db/schema";
 import { db } from "@/db";
 import authConfig from "@/auth.config";
 import { sql } from "drizzle-orm";
+import { getUserByEmail } from "./db/data/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -23,6 +24,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   callbacks: {
+    // Use the signIn() callback to control if a user is allowed to sign in.
+    async signIn({ user, account }) {
+      // todo: if you've added any other provider other than credentials check if this is OK
+      console.log("Async Sign In Called");
+
+      const authEmailVerification = account?.provider === "credentials";
+      if (!authEmailVerification) return true;
+
+      const existingUser = await getUserByEmail(user.id!);
+      const accountVerified = existingUser?.emailVerified;
+      if (!accountVerified) return false;
+
+      return true;
+    },
     async session({ session, token }) {
       if (session.user && token.sub) session.user.id = token.sub;
       // console.log({ sessionFromSession: session });

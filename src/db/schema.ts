@@ -1,5 +1,5 @@
-import { index } from "drizzle-orm/pg-core"
-import { uniqueIndex } from "drizzle-orm/pg-core"
+import { index, unique } from "drizzle-orm/pg-core";
+import { uniqueIndex } from "drizzle-orm/pg-core";
 import {
   boolean,
   timestamp,
@@ -7,24 +7,29 @@ import {
   text,
   primaryKey,
   integer,
-} from "drizzle-orm/pg-core"
-import type { AdapterAccountType } from "next-auth/adapters"
- 
-export const users = pgTable("user", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name"),
-  email: text("email").notNull().unique(),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  password: text("password"),
-  image: text("image"),
-}, table => {
-  return {
-    emailIdx: uniqueIndex("email").on(table.email)
-  }
-})
- 
+} from "drizzle-orm/pg-core";
+import type { AdapterAccountType } from "next-auth/adapters";
+
+export const users = pgTable(
+  "user",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name"),
+    email: text("email").notNull().unique(),
+    emailVerified: timestamp("emailVerified", { mode: "date" }),
+    password: text("password"),
+    image: text("image"),
+  },
+  (table) => {
+    return {
+      emailIdx: uniqueIndex("email").on(table.email),
+    };
+  },
+);
+
+
 export const accounts = pgTable(
   "account",
   {
@@ -46,31 +51,37 @@ export const accounts = pgTable(
     compoundKey: primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-  })
-)
- 
+  }),
+);
+
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
-})
- 
+});
+
 export const verificationTokens = pgTable(
   "verificationToken",
   {
-    identifier: text("identifier").notNull(),
+    identifier: text("identifier")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    email: text("email").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (verificationToken) => ({
-    compositePk: primaryKey({
-      columns: [verificationToken.identifier, verificationToken.token],
-    }),
-  })
-)
- 
+    emailTokenUnique: unique("email_token").on(
+      verificationToken.email,
+      verificationToken.token,
+    ),
+  }),
+);
+
+export type VerificationToken = typeof verificationTokens.$inferSelect;
+
 export const authenticators = pgTable(
   "authenticator",
   {
@@ -89,5 +100,5 @@ export const authenticators = pgTable(
     compositePK: primaryKey({
       columns: [authenticator.userId, authenticator.credentialID],
     }),
-  })
-)
+  }),
+);

@@ -1,6 +1,6 @@
 {
-  "id": "47f810e6-433e-46ce-b3ed-be043e2aa505",
-  "prevId": "0f08f600-16b2-42fb-bf2c-227ff2dab0f0",
+  "id": "9e5bb84c-23ad-4133-ba6d-7a27a9c4f5db",
+  "prevId": "47f810e6-433e-46ce-b3ed-be043e2aa505",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -298,6 +298,49 @@
           "nullsNotDistinct": false,
           "columns": [
             "email"
+          ]
+        }
+      }
+    },
+    "public.verificationToken": {
+      "name": "verificationToken",
+      "schema": "",
+      "columns": {
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "email_token": {
+          "name": "email_token",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email",
+            "token"
           ]
         }
       }

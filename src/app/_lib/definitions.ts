@@ -1,3 +1,4 @@
+import { users } from "@/db/schema";
 import { z } from "zod";
 
 export const RegisterSchema = z.object({
@@ -24,12 +25,7 @@ export const LoginFormSchema = z.object({
   password: z.string().min(1, { message: "Password field must not be empty." }),
 });
 
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-};
+export type User = typeof users.$inferSelect; // return type when queried
 
 export type Provider = "email" | "google" | "discord" | "github";
 

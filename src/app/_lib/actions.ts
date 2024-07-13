@@ -7,7 +7,7 @@ import {
   RegisterSchema,
 } from "./definitions";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { users, verificationTokens } from "@/db/schema";
 import { saltAndHashPassword } from "@/lib/utils";
 import { getUserByEmail } from "@/db/data/user";
 import { signIn } from "@/auth";
@@ -15,6 +15,8 @@ import { DEFAULT_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
 import { OAuthSignInError } from "@/auth.config";
+import { generateVerificationToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/mail";
 
 // output type for both login and register
 type Output = {
@@ -30,6 +32,18 @@ export async function login(values: LoginInputs): Promise<Output> {
   }
 
   const { email, password } = validatedFields.data;
+  const existingUser = await getUserByEmail(email);
+  console.log({existingUser});
+  if (!existingUser) {
+    return { error: "User does not exist." };
+  }
+
+  if (!existingUser.emailVerified) {
+    const verificationToken = await generateVerificationToken(existingUser.email);
+    sendVerificationEmail(verificationToken.email, verificationToken.token);
+    return {success: "User not verified. Check your email for verification token."}
+  }
+
   try {
     console.log("Login Action Called");
     
@@ -46,13 +60,14 @@ export async function login(values: LoginInputs): Promise<Output> {
           return { error: "Invalid credentials!" };
         case "OAuthSignInError":
           return { error: "Already signed in with OAuth!"}
+        case "AccessDenied":
+          return { error: "You're Not allowed to Log In"}
         default:
           return { error: "Something went wrong!" };
       }
     }
     throw error; // maybe bug with nextjs
   }
-  // redirect(DEFAULT_REDIRECT);
 }
 
 export async function register(values: RegisterInputs): Promise<Output> {
@@ -72,12 +87,21 @@ export async function register(values: RegisterInputs): Promise<Output> {
     return { error: "User already exists." };
   }
 
-  await db.insert(users).values({
-    name: name,
-    email: email,
-    password: pwHash,
-  });
+  try {
+    await db.insert(users).values({
+      name: name,
+      email: email,
+      password: pwHash,
+    });
+  } catch (error: any) {
+    if (error.constraint === "email")
+      return { error: "User already exists." };
+  }
 
-  // todo: send verification token
+  const verificationToken = await generateVerificationToken(email);
+  console.log({ verificationToken });
+  
+  sendVerificationEmail(verificationToken.email, verificationToken.token);
+
   return { success: "User created. Check your email for verification token." };
 }

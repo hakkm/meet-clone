@@ -1,5 +1,5 @@
 {
-  "id": "34427f10-5533-4e81-917a-861748b000d2",
+  "id": "0f08f600-16b2-42fb-bf2c-227ff2dab0f0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -284,7 +284,7 @@
               "nulls": "last"
             }
           ],
-          "isUnique": false,
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -309,6 +309,12 @@
         "identifier": {
           "name": "identifier",
           "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -327,16 +333,17 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "verificationToken_identifier_token_pk": {
-          "name": "verificationToken_identifier_token_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "email_token": {
+          "name": "email_token",
+          "nullsNotDistinct": false,
           "columns": [
-            "identifier",
+            "email",
             "token"
           ]
         }
-      },
-      "uniqueConstraints": {}
+      }
     }
   },
   "enums": {},

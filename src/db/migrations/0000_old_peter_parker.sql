@@ -43,10 +43,11 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "verificationToken" (
-	"identifier" text NOT NULL,
+	"identifier" text PRIMARY KEY NOT NULL,
+	"email" text NOT NULL,
 	"token" text NOT NULL,
 	"expires" timestamp NOT NULL,
-	CONSTRAINT "verificationToken_identifier_token_pk" PRIMARY KEY("identifier","token")
+	CONSTRAINT "email_token" UNIQUE("email","token")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -67,4 +68,4 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "email" ON "user" USING btree ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "email" ON "user" USING btree ("email");
