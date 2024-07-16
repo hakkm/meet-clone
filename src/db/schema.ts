@@ -62,6 +62,7 @@ export const sessions = pgTable("session", {
 });
 
 export const verificationTokens = pgTable("verificationToken", {
+  // email=identifier, because it's needed by auth v5
   identifier: text("identifier")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -70,6 +71,17 @@ export const verificationTokens = pgTable("verificationToken", {
 });
 
 export type VerificationToken = typeof verificationTokens.$inferSelect;
+
+export const passwordResetToken = pgTable("passwordResetToken", {
+  // email=identifier, because it's needed by auth v5
+  identifier: text("identifier")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  token: text("token").notNull(),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
+
+export type PasswordResetToken = typeof verificationTokens.$inferSelect;
 
 export const authenticators = pgTable(
   "authenticator",

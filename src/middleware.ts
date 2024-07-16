@@ -14,6 +14,7 @@ export default auth(async (req) => {
   // console.log({nextUrl});
   console.log("middleware.ts: pathname: ", nextUrl.pathname)
   console.log({auth: req.cookies});
+  
   // console.log({isLoggedIn});
   
   

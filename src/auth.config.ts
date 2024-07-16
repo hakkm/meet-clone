@@ -19,8 +19,19 @@ export class OAuthSignInError extends AuthError {
   }
 }
 
+export class InvalidPasswordError extends AuthError {
+  static type = "InvalidPassword";
+  constructor() {
+    super("Invalid credentials");
+  }
+}
+
 export default {
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
   events: {
     // get called when a user is created with oauth
     async linkAccount({ user }) {
@@ -77,7 +88,7 @@ export default {
             user.password!,
           );
           if (!isValidPassword) {
-            return null;
+            throw new InvalidPasswordError();
           }
           console.log("auth.config.ts: you're authorized");
           return user;

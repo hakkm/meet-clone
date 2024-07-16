@@ -5,6 +5,7 @@
 /**
  * This array contains all the routes that are public
  * Used to check if a route is public
+ * Can be acces if the user is already logged in
  */
 export const PUBLIC_ROUTES: string[] = ["/", "/auth/new-verification"];
 
@@ -16,6 +17,8 @@ export const AUTH_ROUTES = {
   LOGIN: "/auth/login",
   REGISTER: "/auth/register",
   ERROR: "/auth/error",
+  FORGOT_PASSWORD: "/auth/forgot-password",
+  NEW_PASSWORD: "/auth/new-password",
 };
 /**
  * The prefix for API auth routes

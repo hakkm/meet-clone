@@ -7,22 +7,6 @@ import { sql } from "drizzle-orm";
 import { getUserByEmail, getUserById } from "./db/data/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
-  },
-  events: {
-    // get called when a user is created with oauth
-    async linkAccount({ user }) {
-      console.log({ user_link_acount: user });
-      await db
-        .update(users)
-        .set({ emailVerified: new Date() })
-        .where(sql`${users.id} = ${user.id}`)
-        .execute();
-      console.log("Account linked successfully");
-    },
-  },
   callbacks: {
     // Use the signIn() callback to control if a user is allowed to sign in.
     async signIn({ user, account }) {
