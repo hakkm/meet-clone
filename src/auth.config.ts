@@ -6,11 +6,11 @@ import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "./app/_lib/definitions";
 import { getUserByEmail } from "./db/data/user";
 import bcrypt from "bcryptjs";
-import Resend from "next-auth/providers/resend"
+import Resend from "next-auth/providers/resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
 import { db } from "./db";
-
+import { sql } from "drizzle-orm";
 
 export class OAuthSignInError extends AuthError {
   static type = "OAuthSignInError";
@@ -20,6 +20,19 @@ export class OAuthSignInError extends AuthError {
 }
 
 export default {
+  session: { strategy: "jwt" },
+  events: {
+    // get called when a user is created with oauth
+    async linkAccount({ user }) {
+      console.log({ user_link_acount: user });
+      await db
+        .update(users)
+        .set({ emailVerified: new Date() })
+        .where(sql`${users.id} = ${user.id}`)
+        .execute();
+      console.log("Account linked successfully");
+    },
+  },
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
@@ -31,15 +44,12 @@ export default {
       from: "onboarding@resend.dev",
     }),
     Google({
-
       allowDangerousEmailAccountLinking: true,
     }),
     Github({
-
       allowDangerousEmailAccountLinking: true,
     }),
     Discord({
-
       allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
@@ -62,7 +72,10 @@ export default {
             throw new OAuthSignInError();
           }
 
-          const isValidPassword = await bcrypt.compare(password, user.password!);
+          const isValidPassword = await bcrypt.compare(
+            password,
+            user.password!,
+          );
           if (!isValidPassword) {
             return null;
           }
