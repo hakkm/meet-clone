@@ -15,6 +15,8 @@ import { DEFAULT_REDIRECT } from "@/routes";
 import { AuthError } from "next-auth";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/mail";
+import { getVerificationToken } from "@/db/data/verification-token";
+import { sql } from "drizzle-orm";
 
 // output type for both login and register
 type Output =
@@ -42,7 +44,7 @@ export async function login(values: LoginInputs): Promise<Output> {
     const verificationToken = await generateVerificationToken(
       existingUser.email,
     );
-    sendVerificationEmail(verificationToken.email, verificationToken.token);
+    sendVerificationEmail(verificationToken.identifier, verificationToken.token);
     return {
       success: "User not verified. Check your email for verification token.",
     };
@@ -104,11 +106,41 @@ export async function register(values: RegisterInputs): Promise<Output> {
   const verificationToken = await generateVerificationToken(email);
   console.log({ verificationToken });
 
-  sendVerificationEmail(verificationToken.email!, verificationToken.token);
+  sendVerificationEmail(verificationToken.identifier!, verificationToken.token);
 
   return { success: "User created. Check your email for verification token." };
 }
 
 export async function loginMagicLink(formData: FormData) {
   await signIn("resend", formData);
+}
+
+
+export async function verifyEmail(token: string): Promise<Output> {
+  const verificationToken = await getVerificationToken(token);
+  if (!verificationToken) {
+    return { error: "Invalid token." };
+  }
+
+  const hasExpired = new Date(verificationToken.expires) < new Date();
+  if (hasExpired) return { error: "Token has expired!" };
+
+  const existingUser = await getUserByEmail(verificationToken.identifier);
+  if (!existingUser) {
+    return { error: "User does not exist." };
+  }
+
+  await db
+    .update(users)
+    .set({ emailVerified: new Date(), email: verificationToken.identifier })
+    .where(sql`${users.email} = ${verificationToken.identifier}`)
+    .execute();
+
+  await db
+    .delete(verificationTokens)
+    .where(sql`${verificationTokens.token} = ${token}`)
+    .execute();
+
+  // todo: when email verified redirect to DEFAULT_REDIRECT
+  return { success: "Email verified." };
 }

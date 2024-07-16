@@ -11,12 +11,16 @@ export async function generateVerificationToken(email: string) {
 
   const existingToken = await getVerificationEmail(email);
 
+  console.log("Existing token: ", existingToken);
+  
+
   if (existingToken) {
-    await db.delete(verificationTokens).where(sql`${verificationTokens.email} = ${email}`).execute()
+    console.log("Existing token found, deleting it");
+    await db.delete(verificationTokens).where(sql`${verificationTokens.identifier} = ${email}`).execute()
   }
 
   const [verificationToken] = await db.insert(verificationTokens).values({
-    email: email,
+    identifier: email,
     token: token,
     expires: expires,
   }).returning()

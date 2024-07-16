@@ -3,10 +3,10 @@
  */
 
 /**
-  * This array contains all the routes that are public
-  * Used to check if a route is public
+ * This array contains all the routes that are public
+ * Used to check if a route is public
  */
-export const PUBLIC_ROUTES: string[] = ["/"];
+export const PUBLIC_ROUTES: string[] = ["/", "/auth/new-verification"];
 
 /**
  * This object contains all the auth routes.
@@ -19,7 +19,7 @@ export const AUTH_ROUTES = {
 };
 /**
  * The prefix for API auth routes
- * Used to check if a route is an API route 
+ * Used to check if a route is an API route
  */
 export const API_AUTH_ROUTES: string = "/api/auth";
 

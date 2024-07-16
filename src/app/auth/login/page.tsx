@@ -7,7 +7,7 @@ import React from 'react'
 export default function LoginPage() {
   return (
     <LoginForm>
-      <MagicLink />
+      {/* <MagicLink /> */}
       <Credentials />
       <Socials />
     </LoginForm>

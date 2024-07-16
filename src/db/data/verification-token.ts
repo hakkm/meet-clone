@@ -4,7 +4,7 @@ import { verificationTokens } from "../schema"
 
 export async function getVerificationEmail(email: string) {
   try {
-    const verificationToken = await db.select().from(verificationTokens).where(sql`${verificationTokens.email} = ${email}`).execute()
+    const verificationToken = await db.select().from(verificationTokens).where(sql`${verificationTokens.identifier} = ${email}`).execute()
     return verificationToken
   } catch {
     return null
@@ -14,7 +14,7 @@ export async function getVerificationEmail(email: string) {
 
 export async function getVerificationToken(token: string) {
   try {
-    const verificationToken = await db.select().from(verificationTokens).where(sql`${verificationTokens.token} = ${token}`).execute()
+    const [ verificationToken ] = await db.select().from(verificationTokens).where(sql`${verificationTokens.token} = ${token}`).execute()
     return verificationToken
   } catch {
     return null

@@ -1,5 +1,5 @@
 {
-  "id": "0f08f600-16b2-42fb-bf2c-227ff2dab0f0",
+  "id": "c7cd0ad1-0ad4-4bd1-82d2-8dbe495cd362",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -312,12 +312,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "token": {
           "name": "token",
           "type": "text",
@@ -334,16 +328,7 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "email_token": {
-          "name": "email_token",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email",
-            "token"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     }
   },
   "enums": {},

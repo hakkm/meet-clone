@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720856277011,
-      "tag": "0000_old_peter_parker",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1720856449240,
-      "tag": "0001_wise_stone_men",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1720856473180,
-      "tag": "0002_exotic_earthquake",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1720875128133,
-      "tag": "0003_cooing_shotgun",
+      "when": 1721080223249,
+      "tag": "0000_melted_shadow_king",
       "breakpoints": true
     }
   ]

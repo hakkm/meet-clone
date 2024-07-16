@@ -7,7 +7,9 @@ export default async function SettingsPage() {
   return (
     <div>
       <h1>Settings Page</h1>
-      <p>Settings Page</p>
+      <pre>
+        {session?.user?.email}
+      </pre>
     </div>
   )
 }

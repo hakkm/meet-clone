@@ -2,7 +2,15 @@
 
 import { Url } from "next/dist/shared/lib/router/router";
 import { ReactNode } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { Socials } from "./socials";
 import { BackLink } from "./back-link";
 
 interface CardWrapperProps {

@@ -4,7 +4,7 @@ import { accounts, sessions, users, verificationTokens } from "@/db/schema";
 import { db } from "@/db";
 import authConfig from "@/auth.config";
 import { sql } from "drizzle-orm";
-import { getUserByEmail } from "./db/data/user";
+import { getUserByEmail, getUserById } from "./db/data/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -27,28 +27,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Use the signIn() callback to control if a user is allowed to sign in.
     async signIn({ user, account }) {
       // todo: if you've added any other provider other than credentials check if this is OK
-      console.log("Async Sign In Called");
+      console.log("auth.ts: Async Sign In Called");
 
-      const authEmailVerification = account?.provider === "credentials";
-      if (!authEmailVerification) return true;
+      const authNeedEmailVerification = account?.provider === "credentials";
+      if (!authNeedEmailVerification) {
+        console.log("auth.ts: Allowed to sign in");
+        return true;
+      }
 
-      const existingUser = await getUserByEmail(user.id!);
+      const existingUser = await getUserById(user.id!);
+
       const accountVerified = existingUser?.emailVerified;
-      if (!accountVerified) return false;
+      if (!accountVerified) {
+        console.log("auth.ts: Unallowed to sign in");
+        return false;
+      }
 
+      console.log("auth.ts: Allowed to sign in");
       return true;
     },
     async session({ session, token }) {
+      console.log("auth.ts: session callback called")
       if (session.user && token.sub) session.user.id = token.sub;
       // console.log({ sessionFromSession: session });
       // console.log({ tokenFromSession: token });
       return session;
     },
-    async jwt({ token, user }) {
-      // console.log({ tokenFromJwt: token });
-      // console.log({ userToken: user });
-      return token;
-    },
+    // async jwt({ token, user }) {
+    //   // console.log({ tokenFromJwt: token });
+    //   // console.log({ userToken: user });
+    //   return token;
+    // },
   },
   session: { strategy: "jwt" },
   ...authConfig,

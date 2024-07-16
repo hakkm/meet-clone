@@ -29,7 +29,6 @@ export const users = pgTable(
   },
 );
 
-
 export const accounts = pgTable(
   "account",
   {
@@ -62,23 +61,13 @@ export const sessions = pgTable("session", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-export const verificationTokens = pgTable(
-  "verificationToken",
-  {
-    identifier: text("identifier")
-      .primaryKey()
-      .$defaultFn(() => crypto.randomUUID()),
-    email: text("email"),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (verificationToken) => ({
-    emailTokenUnique: unique("email_token").on(
-      verificationToken.email,
-      verificationToken.token,
-    ),
-  }),
-);
+export const verificationTokens = pgTable("verificationToken", {
+  identifier: text("identifier")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  token: text("token").notNull(),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+});
 
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 

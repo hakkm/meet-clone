@@ -45,7 +45,7 @@ export default {
     Credentials({
       // The Credentials provider is designed to forward any credentials inserted into the login form (.i.e username/password) to your authentication service via the authorize callback on the provider configuration.
       async authorize(credentials) {
-        console.log("authorize called");
+        console.log("auth.config.ts: authorize called");
         const validatedFields = LoginSchema.safeParse(credentials);
         if (validatedFields.success) {
           console.log("validatedFields");
@@ -66,6 +66,7 @@ export default {
           if (!isValidPassword) {
             return null;
           }
+          console.log("auth.config.ts: you're authorized");
           return user;
         }
 
