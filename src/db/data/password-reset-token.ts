@@ -1,8 +1,9 @@
 import { db } from "@/db";
 import { sql } from "drizzle-orm";
 import { passwordResetToken } from "../schema";
+import { cache } from "react";
 
-export async function getPasswordResetTokenByEmail(email: string) {
+export const getPasswordResetTokenByEmail = cache(async (email: string) => {
   try {
     const [verificationToken] = await db
       .select()
@@ -13,9 +14,9 @@ export async function getPasswordResetTokenByEmail(email: string) {
   } catch {
     return null;
   }
-}
+});
 
-export async function getPasswordResetTokenByToken(token: string) {
+export const getPasswordResetTokenByToken = cache(async (token: string) => {
   try {
     const [PasswordResetToken] = await db
       .select()
@@ -26,4 +27,4 @@ export async function getPasswordResetTokenByToken(token: string) {
   } catch {
     return null;
   }
-}
+});

@@ -1,22 +1,30 @@
-import { db } from "@/db"
-import { sql } from "drizzle-orm"
-import { verificationTokens } from "../schema"
+import { db } from "@/db";
+import { sql } from "drizzle-orm";
+import { verificationTokens } from "../schema";
+import { cache } from "react";
 
-export async function getVerificationEmail(email: string) {
+export const getVerificationEmail = cache(async (email: string) => {
   try {
-    const verificationToken = await db.select().from(verificationTokens).where(sql`${verificationTokens.identifier} = ${email}`).execute()
-    return verificationToken
+    const verificationToken = await db
+      .select()
+      .from(verificationTokens)
+      .where(sql`${verificationTokens.identifier} = ${email}`)
+      .execute();
+    return verificationToken;
   } catch {
-    return null
+    return null;
   }
-}
+});
 
-
-export async function getVerificationToken(token: string) {
+export const getVerificationToken = cache(async (token: string) => {
   try {
-    const [ verificationToken ] = await db.select().from(verificationTokens).where(sql`${verificationTokens.token} = ${token}`).execute()
-    return verificationToken
+    const [verificationToken] = await db
+      .select()
+      .from(verificationTokens)
+      .where(sql`${verificationTokens.token} = ${token}`)
+      .execute();
+    return verificationToken;
   } catch {
-    return null
+    return null;
   }
-}
+});
