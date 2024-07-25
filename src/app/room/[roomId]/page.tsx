@@ -1,9 +1,7 @@
 "use client";
 import ShareButton from "@/components/shareButton";
-import {
-  MicIcon,
-  VideoIcon,
-} from "lucide-react";
+import User from "@/components/User";
+import { MicIcon, VideoIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { ImPhoneHangUp } from "react-icons/im";
 
@@ -13,15 +11,15 @@ export default function Room({ params }: { params: { roomId: string } }) {
   const user = useSession().data?.user;
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
-      <main className="flex flex-col items-center justify-center flex-1">
-        <div className="w-32 h-32 mb-8 rounded-full overflow-hidden bg-gray-700">
-          <div className="flex items-center justify-center h-full w-full text-6xl font-bold">
-            {user?.name![0].toUpperCase()}
-          </div>
+      <main className="flex flex-col items-center justify-center flex-1 w-full h-full bg-gray-900 text-white">
+        <div className="flex flex-wrap w-full h-full">
+          <User name="khair" />
+          <User name="kha" />
+          <User name="younes" />
+          <User name="ddd" />
         </div>
-        <p className="mb-4">{user?.name!}</p>
-
       </main>
+
       <div className="p-4 bg-gray-800">
         <div className="flex items-center">
           <div className="flex-none">
