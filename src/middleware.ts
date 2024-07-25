@@ -37,6 +37,8 @@ export default auth(async (req) => {
   //   const newUrl = new URL("/auth/login", req.nextUrl.origin)
   //   return Response.redirect(newUrl)
   // }
+  console.log("middleware.ts: Route Continue");
+  
 })
 
 export const config = {

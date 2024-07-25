@@ -7,7 +7,7 @@
  * Used to check if a route is public
  * Can be acces if the user is already logged in
  */
-export const PUBLIC_ROUTES: string[] = ["/", "/auth/new-verification"];
+export const PUBLIC_ROUTES: string[] = ["/", "/auth/new-verification", "/room/[roomId]"];
 
 /**
  * This object contains all the auth routes.
