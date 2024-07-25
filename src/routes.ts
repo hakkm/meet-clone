@@ -30,4 +30,4 @@ export const API_AUTH_ROUTES: string = "/api/auth";
  * The default redirect route
  * Used when a user logs in or registers
  */
-export const DEFAULT_REDIRECT: string = "/settings";
+export const DEFAULT_REDIRECT: string = "/landing";
