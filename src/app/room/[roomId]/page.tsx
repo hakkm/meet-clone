@@ -1,56 +1,48 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import ShareButton from "@/components/shareButton";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Copy } from "lucide-react";
+  MicIcon,
+  VideoIcon,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
+import { ImPhoneHangUp } from "react-icons/im";
 
 export default function Room({ params }: { params: { roomId: string } }) {
+  const roomURL = process.env.NEXT_PUBLIC_URL + "/room/" + params.roomId;
+  const roomId = params.roomId;
+  const user = useSession().data?.user;
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Share</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Share link</DialogTitle>
-          <DialogDescription>
-            Share this meeting link with others you want in the meeting
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex items-center space-x-2">
-          <div className="grid flex-1 gap-2">
-            <Label htmlFor="link" className="sr-only">
-              Link
-            </Label>
-            <Input
-              id="link"
-              defaultValue="https://ui.shadcn.com/docs/installation"
-              readOnly
-            />
+    <div className="flex flex-col h-screen bg-gray-900 text-white">
+      <main className="flex flex-col items-center justify-center flex-1">
+        <div className="w-32 h-32 mb-8 rounded-full overflow-hidden bg-gray-700">
+          <div className="flex items-center justify-center h-full w-full text-6xl font-bold">
+            {user?.name![0].toUpperCase()}
           </div>
-          <Button type="submit" size="sm" className="px-3">
-            <span className="sr-only">Copy</span>
-            <Copy className="h-4 w-4" />
-          </Button>
         </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <p className="mb-4">{user?.name!}</p>
+
+      </main>
+      <div className="p-4 bg-gray-800">
+        <div className="flex items-center">
+          <div className="flex-none">
+            <p>{roomId}</p>
+          </div>
+          <div className="flex-1 space-x-4 flex justify-center">
+            <button className="p-3 rounded-full text-white bg-gray-700">
+              <MicIcon className="h-6 w-6" />
+            </button>
+            <button className="p-3 rounded-full text-white bg-gray-700">
+              <VideoIcon className="h-6 w-6" />
+            </button>
+            <button className="p-3 rounded-full bg-red-600">
+              <ImPhoneHangUp className="h-6 w-6" />
+            </button>
+          </div>
+          <div className="flex-none justify-end">
+            <ShareButton roomId={roomId} />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

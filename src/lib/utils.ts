@@ -15,3 +15,10 @@ export async function saltAndHashPassword(password: string): Promise<string> {
 export function generateRoomId(): string {
   return uuidv4().slice(0, 13);
 }
+
+export function titleCase(str: string) {
+  return str
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
