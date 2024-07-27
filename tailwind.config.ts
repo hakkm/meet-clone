@@ -68,6 +68,11 @@ const config = {
           to: { height: "0" },
         },
       },
+      boxShadow: {
+        'inset-lg': 'inset border-blue-500 5px 5px 10px rgba(0, 0, 0, 0.5)',
+        'inset-md': 'inset 3px 3px 6px rgba(0, 0, 0, 0.3)',
+        'inset-sm': 'inset 1px 1px 2px rgba(0, 0, 0, 0.2)',
+      },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

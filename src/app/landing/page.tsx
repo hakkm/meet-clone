@@ -21,7 +21,7 @@ const Landing = () => {
           <Button className='bg-cyan-700 p-6 w-48'>
             <VideoIcon className='mr-4'/> New Meet
           </Button>
-          <div className={`flex items-center border-2 border-gray-500 rounded-md ${focused ? 'border-blue-700' : 'border-black'} h-[3rem]`}>
+          <div className={`flex items-center border-2 border-gray-500 rounded-md ${focused ? 'border-blue-700' : 'border-black'} p-[0.5rem] h-[3rem]`}>
             <label htmlFor="ID">
               <KeyboardIcon width={50} height={50} className={`mr-4 p-2 transition-all ${focused ? 'text-blue-500' : 'text-black'}`} />
             </label>
