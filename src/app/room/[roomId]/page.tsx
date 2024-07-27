@@ -3,12 +3,17 @@ import ShareButton from "@/components/shareButton";
 import User from "@/components/User";
 import { MicIcon, VideoIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import { ImPhoneHangUp } from "react-icons/im";
 
 export default function Room({ params }: { params: { roomId: string } }) {
   const roomURL = process.env.NEXT_PUBLIC_URL + "/room/" + params.roomId;
   const roomId = params.roomId;
   const user = useSession().data?.user;
+  // todo:  create room on mount
+  useEffect(() => {
+    console.log("create room");
+  }, []);
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       <main className="flex flex-col items-center justify-center flex-1 w-full h-full bg-gray-900 text-white">
