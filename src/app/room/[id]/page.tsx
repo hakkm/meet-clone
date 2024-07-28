@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { HiVideoCamera, HiVideoCameraSlash} from "react-icons/hi2";
 import { BiSolidMicrophone, BiSolidMicrophoneOff } from "react-icons/bi";
 import { Button } from "@/components/ui/button";
+import Pending from "@/components/room-meeting/Pending";
 
 
 const Meet = () => {
@@ -65,7 +66,8 @@ useEffect(() => {
       setHeight(videoRef.current.clientHeight);
       console.log("hello")
     }
-  }
+ }
+
   useEffect(() => {
     console.log('useEffect run')
     handleResize()
@@ -179,7 +181,23 @@ useEffect(() => {
         />
       </div>
       <div>
-        hello world
+            <div className="flex flex-col justify-start items-center">
+              <h1 className="text-3xl text-center mb-3">
+                Room Pending, Wanna get in?
+              </h1>
+              <div>
+                <span>Participants</span>
+                {/* here we will list participants */}
+              </div>
+              <div className="flex justify-around w-full mt-4">
+                <Button className="bg-blue-600">
+                  Participate
+                </Button>
+                <Button className="bg-transparent border border-blue-500 text-black">
+                  Back 
+                </Button>
+              </div> 
+            </div>
       </div>
     </section>
   );
