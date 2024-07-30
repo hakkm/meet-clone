@@ -1,4 +1,5 @@
 "use client";
+import { RoomManager } from "@/app/_lib/room.services";
 import ShareButton from "@/components/shareButton";
 import User from "@/components/User";
 import { MicIcon, VideoIcon } from "lucide-react";
@@ -6,12 +7,20 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { ImPhoneHangUp } from "react-icons/im";
 
+
 export default function Room({ params }: { params: { roomId: string } }) {
   const roomURL = process.env.NEXT_PUBLIC_URL + "/room/" + params.roomId;
   const roomId = params.roomId;
   const user = useSession().data?.user;
   // todo:  create room on mount
   useEffect(() => {
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    }).then((stream)=>{
+      const roomManager = new RoomManager(roomId, stream);
+      roomManager.createRoom();
+    })
     console.log("create room");
   }, []);
   return (
@@ -20,8 +29,6 @@ export default function Room({ params }: { params: { roomId: string } }) {
         <div className="flex flex-wrap w-full h-full">
           <User name="khair" />
           <User name="kha" />
-          <User name="younes" />
-          <User name="ddd" />
         </div>
       </main>
 
@@ -49,3 +56,4 @@ export default function Room({ params }: { params: { roomId: string } }) {
     </div>
   );
 }
+

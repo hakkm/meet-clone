@@ -12,8 +12,8 @@ export default auth(async (req) => {
   const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
   const isAuthRoute = Object.values(AUTH_ROUTES).includes(nextUrl.pathname);
   // console.log({nextUrl});
-  console.log("middleware.ts: pathname: ", nextUrl.pathname)
-  console.log({auth: req.cookies});
+  // console.log("middleware.ts: pathname: ", nextUrl.pathname)
+  // console.log({auth: req.cookies});
   
   // console.log({isLoggedIn});
   

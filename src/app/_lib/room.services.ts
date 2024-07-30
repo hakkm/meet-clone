@@ -10,45 +10,51 @@ import {
   CollectionReference,
 } from "firebase/firestore";
 
-class RoomManager {
-  peerConnection: RTCPeerConnection;
-  localStream: MediaStream;
-  remoteStream: MediaStream;
+export class RoomManager {
+  localStream: MediaStream | undefined;
+  remoteStream: MediaStream | undefined;
   roomId: string;
   roomRef: DocumentReference;
   callerCandidatesCollectionRef: CollectionReference;
 
-  constructor(roomId: string) {
-    this.localStream = new MediaStream();
+  constructor(roomId: string, stream: MediaStream | undefined) {
+    if (!stream) throw new Error("Stream is undefied")
+    this.localStream = stream;
     this.remoteStream = new MediaStream();
     this.roomId = roomId;
-    this.peerConnection = new RTCPeerConnection(configuration);
     this.roomRef = doc(db, "rooms", this.roomId);
-    this.callerCandidatesCollectionRef = collection(this.roomRef, "callerCandidates");
-
-    this.registerPeerConnectionListeners();
+    this.callerCandidatesCollectionRef = collection(
+      this.roomRef,
+      "callerCandidates",
+    );
   }
 
   async createRoom() {
     console.log("Create PeerConnection with configuration: ", configuration);
-    this.peerConnection = new RTCPeerConnection(configuration);
+    let peerConnection = new RTCPeerConnection(configuration);
+    this.registerPeerConnectionListeners(peerConnection);
 
-    this.localStream.getTracks().forEach((track) => {
-      this.peerConnection.addTrack(track, this.localStream);
+    this.localStream!.getTracks().forEach((track) => {
+      peerConnection.addTrack(track, this.localStream!);
     });
 
-    this.peerConnection.addEventListener("icecandidate", async (event) => {
+    peerConnection.onicecandidate = async (event) => {
+      console.log("Got new local ICE candidate: ", event.candidate);
       if (!event.candidate) {
         console.log("Got final candidate!");
         return;
       }
       console.log("Got candidate: ", event.candidate);
-      await addDoc(this.callerCandidatesCollectionRef, event.candidate.toJSON());
-    });
+      await addDoc(
+        this.callerCandidatesCollectionRef,
+        event.candidate.toJSON(),
+      );
+    };
 
-    const offer = await this.peerConnection.createOffer();
-    await this.peerConnection.setLocalDescription(offer);
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
     console.log("Created offer:", offer);
+    console.log({ peerConnection });
 
     const roomWithOffer = {
       offer: {
@@ -60,7 +66,7 @@ class RoomManager {
     this.roomId = this.roomRef.id;
     console.log(`New room created with SDP offer. Room ID: ${this.roomRef.id}`);
 
-    this.peerConnection.addEventListener("track", (event) => {
+    peerConnection.addEventListener("track", (event) => {
       console.log("Got remote track:", event.streams[0]);
       event.streams[0].getTracks().forEach((track) => {
         console.log("Add a track to the remoteStream:", track);
@@ -71,10 +77,10 @@ class RoomManager {
     onSnapshot(this.roomRef, async (snapshot) => {
       console.log("Got updated room:");
       const data = snapshot.data();
-      if (!this.peerConnection.currentRemoteDescription && data && data.answer) {
+      if (!peerConnection.currentRemoteDescription && data && data.answer) {
         console.log("Got remote description: ", data.answer);
         const rtcSessionDescription = new RTCSessionDescription(data.answer);
-        await this.peerConnection.setRemoteDescription(rtcSessionDescription);
+        await peerConnection.setRemoteDescription(rtcSessionDescription);
       }
     });
 
@@ -84,29 +90,32 @@ class RoomManager {
         if (change.type === "added") {
           const data = change.doc.data();
           console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
-          await this.peerConnection.addIceCandidate(new RTCIceCandidate(data));
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data));
         }
       });
     });
   }
 
-  registerPeerConnectionListeners() {
-    this.peerConnection.addEventListener("icegatheringstatechange", () => {
-      console.log(`ICE gathering state changed: ${this.peerConnection.iceGatheringState}`);
+  registerPeerConnectionListeners(peerConnection: RTCPeerConnection) {
+    peerConnection.addEventListener("icegatheringstatechange", () => {
+      console.log(
+        `ICE gathering state changed: ${peerConnection.iceGatheringState}`,
+      );
     });
 
-    this.peerConnection.addEventListener("connectionstatechange", () => {
-      console.log(`Connection state change: ${this.peerConnection.connectionState}`);
+    peerConnection.addEventListener("connectionstatechange", () => {
+      console.log(`Connection state change: ${peerConnection.connectionState}`);
     });
 
-    this.peerConnection.addEventListener("signalingstatechange", () => {
-      console.log(`Signaling state change: ${this.peerConnection.signalingState}`);
+    peerConnection.addEventListener("signalingstatechange", () => {
+      console.log(`Signaling state change: ${peerConnection.signalingState}`);
     });
 
-    this.peerConnection.addEventListener("iceconnectionstatechange", () => {
-      console.log(`ICE connection state change: ${this.peerConnection.iceConnectionState}`);
+    peerConnection.addEventListener("iceconnectionstatechange", () => {
+      console.log(
+        `ICE connection state change: ${peerConnection.iceConnectionState}`,
+      );
     });
   }
 }
 
-export default RoomManager;
