@@ -8,36 +8,47 @@ import Pending from "@/components/room-meeting/Pending";
 
 const Meet = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [paused, setPaused] = useState(false);
   const [muted, setMuted] = useState(false);
   const [ height, setHeight ] = useState(0);
   const [ loaded, setLoaded] = useState(false);
+
+  const getCameraStream = async () => {
+    try {
+     const cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width: 320,
+        height: 180,
+        facingMode: 'user',
+        aspectRatio: 16/9
+      
+      }
+      
+     }) 
+     if(videoRef.current) videoRef.current.srcObject = cameraStream;
+     setCameraStream(cameraStream)
+    } catch (error) {
+     console.log("getting camera...", error) 
+     alert("you should enable camera permission")
+    }
+  }
+  const getAudioStream = async () => {
+    try {
+      const audioStream = await navigator.mediaDevices.getUserMedia({audio: true});
+      if(audioRef.current) audioRef.current.srcObject = audioStream;
+      setAudioStream(audioStream);
+    } catch (error) {
+      console.log("getting audio", error);
+      alert("you should enable audio permission")
+    }
+  }
+
   useEffect(() => {
-    const getMediaStream = async () => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: 320,
-            height: 180,
-            facingMode: 'user',
-            aspectRatio: 16/9
-          },
-          audio: true,
-        });
-        setStream(mediaStream);
-      } catch (error) {
-        console.error("Error accessing media devices.", error);
-      }
-    };
-
-    getMediaStream();
-
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-      }
-    };
+    getCameraStream();
+    getAudioStream();
   }, []);
   useEffect(() => {
     if(videoRef.current){
@@ -47,20 +58,19 @@ const Meet = () => {
   useEffect(() => {
   },[])
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
+    if (videoRef.current && cameraStream) {
+      videoRef.current.srcObject = cameraStream;
     }
-  }, [stream]);
-useEffect(() => {
-  if(!stream?.getAudioTracks()){
-    handleMute();
-  }
-},[stream])
-  const handleCameraClick = () => {
-    console.log("hello world")
-    console.log(stream)
-    !muted}
-  
+
+  }, [cameraStream]);
+  useEffect(() => {
+    if (audioRef.current && audioStream) {
+      audioRef.current.srcObject = audioStream
+    }
+  },[audioStream])
+  useEffect(() => {
+    console.log(window.PermissionStatus)
+  },[])
 
   const handleResize = () => {
     if(videoRef.current){
@@ -78,10 +88,11 @@ useEffect(() => {
 
   const handleCameraOn = async() => {
     console.log(paused)
-    if(stream?.getVideoTracks){
-    const [track] = stream.getVideoTracks();
+    if(cameraStream?.getVideoTracks){
+    const [track] = cameraStream.getVideoTracks();
     track.stop()
     setPaused(true);
+    console.log(global)
   }}
   const handleCameraOff = async() => {
    try {
@@ -95,10 +106,9 @@ useEffect(() => {
         facingMode: 'user',
         aspectRatio: 16/9
       },
-      audio: muted ? false : true 
     });
     if(videoRef.current) videoRef.current.srcObject = mediaStream;
-    setStream(mediaStream);
+    setCameraStream(mediaStream);
     setPaused(false)
     setLoaded(false)
    } catch (error) {
@@ -106,9 +116,11 @@ useEffect(() => {
    } 
   }
   const handleMute = () => {
-    const tracks = stream?.getAudioTracks()
+    const tracks = audioStream?.getAudioTracks()
     console.log(tracks)
     if(tracks){
+
+      tracks[0].enabled = false;
       console.log(tracks[0])
       tracks[0].stop()
       setMuted(true)
@@ -118,20 +130,12 @@ useEffect(() => {
     
     try {
 
-      const constraint = {
-        video: {
-          width: 320,
-          height: 180,
-          facingMode: 'user',
-          aspectRatio: 16/9
-        },
-        audio: true
-
-      } 
-      const mediaStream = await navigator.mediaDevices.getUserMedia(paused ? {audio:true}:constraint);
-      if(videoRef.current && paused) videoRef.current.srcObject = mediaStream;
-      setStream(mediaStream);
-      setMuted(false)        
+      const mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
+      if(audioRef.current && paused) audioRef.current.srcObject = mediaStream;
+      const tracks = audioStream?.getAudioTracks()
+      if(tracks) tracks[0].enabled = true
+      setAudioStream(mediaStream);
+      setMuted(false); 
 
     } catch (error) {
       
@@ -140,7 +144,7 @@ useEffect(() => {
   }
   return (
 
-    <section className="flex px-[3rem] items-center mt-[4rem] justify-around flex-col lg:flex-row md:justify-between ">
+    <section className="flex px-[3rem] items-center mt-[4rem] justify-around flex-col lg:flex-row md:justify-around ">
       <div className="relative w-full h-[25rem]  shadow-inset-lg mt-[5rem] border-black lg:w-1/2 ">
         <h1 className=" text-center absolute z-30 top-0 left-0 transform  text-white ml-[0.5rem]">
           Name
@@ -179,6 +183,12 @@ useEffect(() => {
            
           playsInline
           className="w-full bg-black h-auto rounded-md absolute top-0 left-0 object-cover shadow-inset-lg lg:h-full outline-8 outline-gray-950 "
+        />
+        <audio 
+          ref={audioRef}
+          autoPlay 
+          playsInline
+          
         />
       </div>
       <div>
