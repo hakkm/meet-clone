@@ -44,7 +44,8 @@ const Meet = () => {
       setHeight(videoRef.current.clientHeight)
     }
   })
-
+  useEffect(() => {
+  },[])
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
@@ -139,7 +140,7 @@ useEffect(() => {
   }
   return (
 
-    <section className="flex px-[3rem] items-center mt-[4rem] justify-around flex-col lg:flex-row ">
+    <section className="flex px-[3rem] items-center mt-[4rem] justify-around flex-col lg:flex-row md:justify-between ">
       <div className="relative w-full h-[25rem]  shadow-inset-lg mt-[5rem] border-black lg:w-1/2 ">
         <h1 className=" text-center absolute z-30 top-0 left-0 transform  text-white ml-[0.5rem]">
           Name
@@ -185,15 +186,15 @@ useEffect(() => {
               <h1 className="text-3xl text-center mb-3">
                 Room Pending, Wanna get in?
               </h1>
-              <div>
+              <div className="relative mb-5">
                 <span>Participants</span>
                 {/* here we will list participants */}
               </div>
               <div className="flex justify-around w-full mt-4">
-                <Button className="bg-blue-600">
+                <Button className="bg-blue-600 w-3/12 text-xl">
                   Participate
                 </Button>
-                <Button className="bg-transparent border border-blue-500 text-black">
+                <Button className="bg-transparent border w-3/12 text-xl border-blue-500 text-blue-500">
                   Back 
                 </Button>
               </div> 
