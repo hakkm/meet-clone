@@ -51,7 +51,7 @@ export default function Room({ params }: { params: { roomId: string } }) {
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       <main className="flex flex-row items-center justify-center flex-1 w-full h-full flex-wrap gap-3 p-2 bg-gray-900 text-white">
-        <User name="khair" stream={stream} />
+        <User name="khair" cameraOn={cameraState} stream={stream} />
         <User name="kha" />
       </main>
 

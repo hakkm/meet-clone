@@ -4,20 +4,22 @@ import React, { useEffect, useRef } from "react";
 
 export default function User({
   name,
+  cameraOn, 
   stream,
 }: {
   name: string;
+  cameraOn?: boolean;
   stream?: MediaStream;
 }) {
   const refVideo = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     if (!refVideo.current || !stream) return
     refVideo.current.srcObject = stream
-  }, [stream])
+  }, [stream, cameraOn])
   return (
     <div>
       
-    {stream ? (
+    {stream && cameraOn ? (
         <video
           autoPlay
           playsInline
