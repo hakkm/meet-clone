@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useRef, useState } from "react"
+import { MutableRefObject, useEffect, useRef, useState } from "react"
 import { HiVideoCamera, HiVideoCameraSlash} from "react-icons/hi2";
 import { BiSolidMicrophone, BiSolidMicrophoneOff } from "react-icons/bi";
 import { Button } from "@/components/ui/button";
 import Pending from "@/components/room-meeting/Pending";
+import { useRouter } from "next/navigation";
 
 
 const Meet = () => {
@@ -16,6 +17,7 @@ const Meet = () => {
   const [ height, setHeight ] = useState(0);
   const [ loaded, setLoaded] = useState(false);
 
+  const router = useRouter();
   const getCameraStream = async () => {
     try {
      const cameraStream = await navigator.mediaDevices.getUserMedia({
@@ -56,8 +58,6 @@ const Meet = () => {
     }
   })
   useEffect(() => {
-  },[])
-  useEffect(() => {
     if (videoRef.current && cameraStream) {
       videoRef.current.srcObject = cameraStream;
     }
@@ -68,9 +68,6 @@ const Meet = () => {
       audioRef.current.srcObject = audioStream
     }
   },[audioStream])
-  useEffect(() => {
-    console.log(window.PermissionStatus)
-  },[])
 
   const handleResize = () => {
     if(videoRef.current){
@@ -86,7 +83,39 @@ const Meet = () => {
     return () => window.removeEventListener('resize', handleResize)
   },[videoRef])
 
-  const handleCameraOn = async() => {
+
+  const audioStatus = async() => {
+    try {
+      return await navigator.permissions.query({name: 'microphone'})
+    } catch (error) {
+      throw new Error(`Microphone Permission Error`) 
+    }
+  }
+  const cameraStatus = async() => {
+    try {
+      return await navigator.permissions.query({name: 'camera'})
+    } catch (error) {
+      throw new Error('Camera Permission Error') 
+    }
+
+  }
+  const getStatus = async () => {
+    const audio = await audioStatus();
+    const video = await cameraStatus();
+    audio.onchange = () => {
+      setMuted(true)
+      console.log("audio muted")
+    }
+    video.onchange = () => {
+      setPaused(true)
+      console.log("video muted")
+    }
+  }
+  useEffect(() => {
+   getStatus(); 
+
+  },[])
+  const handleCameraOn = async(cameraStream: MediaStream | null) => {
     console.log(paused)
     if(cameraStream?.getVideoTracks){
     const [track] = cameraStream.getVideoTracks();
@@ -94,7 +123,7 @@ const Meet = () => {
     setPaused(true);
     console.log(global)
   }}
-  const handleCameraOff = async() => {
+  const handleCameraOff = async(cameraStream: MediaStream | null, video: MutableRefObject<HTMLVideoElement | null>) => {
    try {
     console.log(paused)  
     console.log(loaded)
@@ -115,7 +144,7 @@ const Meet = () => {
     console.log(error) 
    } 
   }
-  const handleMute = () => {
+  const handleMute = (audioStream: MediaStream | null) => {
     const tracks = audioStream?.getAudioTracks()
     console.log(tracks)
     if(tracks){
@@ -126,7 +155,7 @@ const Meet = () => {
       setMuted(true)
     }
   }
-  const handleUnmute = async() => {
+  const handleUnmute = async(audioStream: MediaStream | null, audio: MutableRefObject<HTMLAudioElement | null>) => {
     
     try {
 
@@ -152,21 +181,21 @@ const Meet = () => {
         <div className="flex bg-transparent w-[8rem] absolute bottom-0 left-1/2 -translate-x-1/2 z-[999] justify-around items-center ">
             {!paused ? (
               <Button className="bg-transparent hover:bg-transparent">
-                <HiVideoCamera className="text-white size-[2rem]" onClick={handleCameraOn}/>
+                <HiVideoCamera className="text-white size-[2rem]" onClick={() => handleCameraOn(cameraStream)}/>
               </Button>
             ):(
               <Button className="bg-transparent hover:bg-transparent" disabled={loaded}>
-                <HiVideoCameraSlash className="text-white size-[2rem]" onClick={handleCameraOff}/>
+                <HiVideoCameraSlash className="text-white size-[2rem]" onClick={() => handleCameraOff(cameraStream,videoRef)}/>
               </Button>
             )}
 
             {!muted ? (
               <Button className="bg-transparent hover:bg-transparent">
-                <BiSolidMicrophone className="text-white size-[2rem]" onClick={handleMute}/>
+                <BiSolidMicrophone className="text-white size-[2rem]" onClick={() => handleMute(audioStream)}/>
               </Button>
             ):(
               <Button className="bg-transparent hover:bg-transparent">
-                <BiSolidMicrophoneOff className="text-white size-[2rem]" onClick={handleUnmute}/>
+                <BiSolidMicrophoneOff className="text-white size-[2rem]" onClick={() => handleUnmute(audioStream, audioRef)}/>
               </Button>
             )}
 
@@ -201,10 +230,17 @@ const Meet = () => {
                 {/* here we will list participants */}
               </div>
               <div className="flex justify-around w-full mt-4">
-                <Button className="bg-blue-600 w-3/12 text-xl">
+                <Button 
+                  className="bg-blue-600 w-3/12 text-xl"
+                  onClick={()=>{}}
+                >
                   Participate
                 </Button>
-                <Button className="bg-transparent border w-3/12 text-xl border-blue-500 text-blue-500">
+                <Button 
+                  className="bg-transparent border w-3/12 text-xl border-blue-500 text-blue-500"
+                  onClick={() => router.push('/')}
+                >
+
                   Back 
                 </Button>
               </div> 
